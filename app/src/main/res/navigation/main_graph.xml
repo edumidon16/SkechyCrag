@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_graph"
+    app:startDestination="@id/logInFragment">
+
+    <fragment
+        android:id="@+id/logBookFragment"
+        android:name="com.example.skechycrag.ui.logbook.LogBookFragment"
+        android:label="fragment_log_book"
+        tools:layout="@layout/fragment_log_book" />
+    <fragment
+        android:id="@+id/logInFragment"
+        android:name="com.example.skechycrag.ui.login.LogInFragment"
+        android:label="fragment_log_in"
+        tools:layout="@layout/fragment_log_in" >
+        <action
+            android:id="@+id/action_logInFragment_to_logBookFragment"
+            app:destination="@id/logBookFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addFragment2"
+        android:name="com.example.skechycrag.ui.add.AddFragment"
+        android:label="fragment_add"
+        tools:layout="@layout/fragment_add" />
+</navigation>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "373264640564",
+    "project_id": "skechycrag",
+    "storage_bucket": "skechycrag.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:373264640564:android:bc2b7dc8cb8483b1e07861",
+        "android_client_info": {
+          "package_name": "com.example.skechycrag"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrjAI1hZsMYFUlrqI9VwQoRWXv-2ON9k8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
