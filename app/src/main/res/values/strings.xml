@@ -14,4 +14,5 @@
     <string name="forgot">I forgot my password</string>
     <string name="login">Login</string>
     <string name="orLogInWith">Or login with</string>
+    <string name="search">Search</string>
 </resources>

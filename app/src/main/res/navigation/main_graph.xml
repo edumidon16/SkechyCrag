@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_graph"
-    app:startDestination="@id/logInFragment">
+    app:startDestination="@id/searchFragment">
 
     <fragment
         android:id="@+id/logBookFragment"
@@ -16,12 +16,17 @@
         android:label="fragment_log_in"
         tools:layout="@layout/fragment_log_in" >
         <action
-            android:id="@+id/action_logInFragment_to_logBookFragment"
-            app:destination="@id/logBookFragment" />
+            android:id="@+id/action_logInFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
     </fragment>
     <fragment
         android:id="@+id/addFragment2"
         android:name="com.example.skechycrag.ui.add.AddFragment"
         android:label="fragment_add"
         tools:layout="@layout/fragment_add" />
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.example.skechycrag.ui.search.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" />
 </navigation>

@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -49,12 +50,12 @@ class LogInFragment : Fragment() {
             var emailAddress = binding.etEmailAdrress.text
             var password = binding.etPassword.text
 
-            if(emailAddress != null && password != null){
+            if(emailAddress.toString() != "" && password.toString() != "" ){
                 //Check with the database
                 userViewModel.checkUser(emailAddress.toString(), password.toString())
             }
             else{
-                Snackbar.make(requireView(), "Enter all the information", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(requireView(), "Error: Enter all the information", Snackbar.LENGTH_SHORT).show()
             }
         }
         //Nos conectamos al state del VIEWMODEL, de esta forma cuando el state del viewmodel cambie, el fragment cambia.
@@ -80,11 +81,11 @@ class LogInFragment : Fragment() {
     }
 
     private fun errorState() {
-
+        Snackbar.make(requireView(), "Error: Wrong user", Snackbar.LENGTH_SHORT).show()
     }
     private fun navigateToMenu() {
         findNavController().navigate(
-            R.id.action_logInFragment_to_logBookFragment
+            R.id.action_logInFragment_to_searchFragment
         )
     }
 

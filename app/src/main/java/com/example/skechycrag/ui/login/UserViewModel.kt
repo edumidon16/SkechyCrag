@@ -18,7 +18,6 @@ class UserViewModel @Inject constructor(
     private val _userState = MutableStateFlow<UserDetailState>(UserDetailState.Loading)
     val userState: StateFlow<UserDetailState> = _userState
 
-
     fun checkUser(username:String, password:String){
         //Creamos una corrutina para poder llamar al use case, ya que es un suspend fun
         viewModelScope.launch {

@@ -1,4 +1,4 @@
-package com.example.skechycrag.data.model
+package com.example.skechycrag.data.model.user
 
 import javax.inject.Inject
 import javax.inject.Singleton
