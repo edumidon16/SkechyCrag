@@ -1,6 +1,6 @@
 package com.example.skechycrag.data.network
 
-import com.example.skechycrag.data.model.route.RoutetModel
+import com.example.skechycrag.data.model.route.RouteModel
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
@@ -10,19 +10,19 @@ import javax.inject.Inject
 class RouteServices @Inject constructor(
     private val db: FirebaseFirestore
 ) {
-    suspend fun getAllRootsFromCrag(name: String): List<RoutetModel> {
+    suspend fun getAllRoutesFromCrag(name: String): List<RouteModel> {
         return withContext(Dispatchers.IO) {
             try {
-                val querySnapshot = db.collection("RouteTable").get().await()
+                val querySnapshot =
+                    db.collection("RouteTable").whereEqualTo("crag_name", name).get().await()
                 querySnapshot.documents.mapNotNull { document ->
-                    document.toObject(RoutetModel::class.java)?.copy()
-
+                    document.toObject(RouteModel::class.java)?.copy()
                 }
-            }catch (e: Exception) {
+            } catch (e: Exception) {
                 // Handle any errors here
                 // Log the error or print stack trace
                 e.printStackTrace() // Use Log.e if in an Android environment
-                emptyList<RoutetModel>()
+                emptyList<RouteModel>()
             }
         }
 

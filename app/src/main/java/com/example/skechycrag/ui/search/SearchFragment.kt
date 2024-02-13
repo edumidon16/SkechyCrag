@@ -5,15 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.skechycrag.R
 import com.example.skechycrag.databinding.FragmentSearchBinding
-import com.example.skechycrag.ui.adapter.SearchAdapter
+import com.example.skechycrag.ui.search.adapter.SearchAdapter
 import com.example.skechycrag.ui.model.CragModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -53,8 +56,8 @@ class SearchFragment : Fragment() {
             override fun onQueryTextChange(newText: String?) = false
         })
 
-        //Initiate adapter
-        searchAdapter = SearchAdapter()
+        //Initiate adapter, and pass the function navigateToDetail with the cragName that has been selected
+        searchAdapter = SearchAdapter(){navigateToDetail(it)}
         binding.rvCragInfo.setHasFixedSize(true)
         binding.rvCragInfo.layoutManager = LinearLayoutManager(requireContext())
         binding.rvCragInfo.adapter = searchAdapter
@@ -88,8 +91,20 @@ class SearchFragment : Fragment() {
         }
     }
 
-    private fun errorState() {
+    private suspend fun errorState() {
+        withContext(Dispatchers.Main){
+            binding.progressBar.isVisible = false
+        }
         Snackbar.make(requireView(), "Error: Crag not found", Snackbar.LENGTH_SHORT).show()
+    }
+
+    private fun  navigateToDetail(cragName: String){
+        //Go to the detail fragment and sending the name of the crag
+        //Add el comentario de la crag
+        findNavController().navigate(
+            R.id.action_searchFragment_to_routeDetailFragment,
+            bundleOf("cragName" to cragName)
+        )
     }
 
 

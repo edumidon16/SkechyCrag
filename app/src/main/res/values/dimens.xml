@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="svLW">0dp</dimen>
+    <dimen name="rvLW">0dp</dimen>
+    <dimen name="rvLH">0dp</dimen>
+    <dimen name="cvLH">200dp</dimen>
+    <dimen name="cvMarginVertical">8dp</dimen>
+    <dimen name="cvMarginhorizontal">16dp</dimen>
+    <dimen name="cvCornerRadius">22dp</dimen>
+    <dimen name="cwCardElevation">8dp</dimen>
+    <dimen name="tvlayoutWidthCW">260dp</dimen>
+    <dimen name="tvMarginLeftCV">15dp</dimen>
+    <dimen name="tvLayoutMarginTop">10dp</dimen>
+    <dimen name="MartginTopTVCI">140dp</dimen>
+</resources>

@@ -1,4 +1,9 @@
 package com.example.skechycrag.data.model.crag
 
-class CragProvide {
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+class CragProvide @Inject constructor(){
+    var cragInfo : List<CragModel> = emptyList()
 }

@@ -1,14 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="150dp"
-    android:orientation="horizontal"
-    android:id="@+id/item_crag_info">
-    
-    <TextView
-        android:id="@+id/tvCragName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"/>
+    android:layout_height="@dimen/cvLH"
+    android:layout_marginHorizontal="@dimen/cvMarginhorizontal"
+    android:layout_marginVertical="@dimen/cvMarginVertical"
+    app:cardCornerRadius="@dimen/cvCornerRadius"
+    app:cardElevation="@dimen/cwCardElevation">
 
-</androidx.appcompat.widget.LinearLayoutCompat>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_image_item"
+            android:scaleType="centerCrop"/>
+
+
+        <TextView
+            android:id="@+id/tvCragName"
+            android:layout_width="@dimen/tvlayoutWidthCW"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/tvMarginLeftCV"
+            android:layout_marginTop="@dimen/tvLayoutMarginTop"
+            android:textColor="@color/black"
+            android:textSize="30sp"
+            tools:text="hola" />
+
+        <TextView
+            android:id="@+id/tvNumberRoutes"
+            android:layout_width="@dimen/tvlayoutWidthCW"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/tvMarginLeftCV"
+            android:layout_marginTop="@dimen/MartginTopTVCI"
+            android:textColor="@color/black"
+            android:textSize="25sp"
+            tools:text="hola" />
+
+    </FrameLayout>
+
+
+</androidx.cardview.widget.CardView>

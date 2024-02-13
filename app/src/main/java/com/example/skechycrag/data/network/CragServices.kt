@@ -16,8 +16,8 @@ class CragServices @Inject constructor(
     suspend fun getCragInfo(name: String): List<CragModel> {
         return withContext(Dispatchers.IO) {
             try {
-                val querySnapshot = db.collection("UserTable")
-                    //.whereEqualTo("crag_name", name)
+                val querySnapshot = db.collection("CragTable")
+                    .whereEqualTo("crag_name", name)
                     .get()
                     .await()
                 println("Firestore returned documents: ${querySnapshot.documents}")
