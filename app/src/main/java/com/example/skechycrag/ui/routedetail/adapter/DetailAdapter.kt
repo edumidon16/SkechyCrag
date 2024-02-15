@@ -6,10 +6,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.skechycrag.R
 import com.example.skechycrag.ui.model.CragModel
 import com.example.skechycrag.ui.model.RouteModel
+import com.example.skechycrag.ui.model.UserRouteModel
 import com.example.skechycrag.ui.search.adapter.SearchViewHolder
+import javax.inject.Inject
 
 class DetailAdapter(
-    var routeList:List<RouteModel> = emptyList()
+    var routeList:List<RouteModel> = emptyList(),
+    private val onItemSelected: (UserRouteModel) -> Unit
 ):RecyclerView.Adapter<DetailViewHolder>() {
 
     fun updateList(routeList: List<RouteModel>) {
@@ -27,6 +30,6 @@ class DetailAdapter(
     }
 
     override fun onBindViewHolder(viewHolder: DetailViewHolder, position: Int) {
-        viewHolder.bind(routeList[position])
+        viewHolder.bind(routeList[position], onItemSelected)
     }
 }

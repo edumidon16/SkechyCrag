@@ -3,6 +3,7 @@ package com.example.skechycrag.ui.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.skechycrag.domain.GetUsersUseCase
+import com.example.skechycrag.ui.constants.Constants.Companion.USERNAME
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,6 +23,7 @@ class UserViewModel @Inject constructor(
         //Creamos una corrutina para poder llamar al use case, ya que es un suspend fun
         viewModelScope.launch {
            if(getUsersUseCase(username, password)){
+                USERNAME = username
                _userState.update { UserDetailState.Success(true) }
            }else{
                _userState.update { UserDetailState.Error(false) }

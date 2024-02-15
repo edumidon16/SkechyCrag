@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.skechycrag.R
 import com.example.skechycrag.databinding.FragmentRouteDetailBinding
 import com.example.skechycrag.databinding.FragmentSearchBinding
+import com.example.skechycrag.ui.model.RouteModel
+import com.example.skechycrag.ui.model.UserRouteModel
 import com.example.skechycrag.ui.routedetail.adapter.DetailAdapter
 import com.example.skechycrag.ui.search.SearchDetailState
 import com.example.skechycrag.ui.search.adapter.SearchAdapter
@@ -56,7 +58,7 @@ class RouteDetailFragment : Fragment() {
         binding.cragNameTextView.text = cragName
 
 
-        routeDetailAdapter = DetailAdapter()
+        routeDetailAdapter = DetailAdapter(){addRouteLogBook(it)}
         binding.routesRecyclerView.setHasFixedSize(true)
         binding.routesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.routesRecyclerView.adapter = routeDetailAdapter
@@ -82,6 +84,18 @@ class RouteDetailFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun addRouteLogBook(route: UserRouteModel){
+        var completeRoute = UserRouteModel(
+            crag_name = cragName!!,
+            route_name = route.route_name,
+            grade = route.grade,
+            type = route.type,
+            comment = route.comment,
+            tries = route.tries
+        )
+        routeDetailViewModel.addRouteToLogBook(completeRoute)
     }
 
     private fun startState() {

@@ -15,4 +15,11 @@
     <string name="login">Login</string>
     <string name="orLogInWith">Or login with</string>
     <string name="search">Search</string>
+
+    <string-array name="route_options">
+        <item>Onsight</item>
+        <item>Flash</item>
+        <item>Redpoint</item>
+    </string-array>
+
 </resources>

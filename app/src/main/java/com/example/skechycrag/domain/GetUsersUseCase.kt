@@ -10,10 +10,8 @@ class GetUsersUseCase @Inject constructor(
 
     //INVOKE se llama directamente al iniciar la clase. EJ= val getUserUseCase = GetUsersUseCase() -> getUserUseCase()
     suspend operator fun invoke(username:String, password:String): Boolean{
-        var users = repository.getAllUsers()
-        for(user in users){
-            if(user.username == username && user.password == password) return true
-        }
+        var user = repository.getAllUsers(username)
+        if(user?.username == username && user?.password == password) return true
         return false
     }
 }

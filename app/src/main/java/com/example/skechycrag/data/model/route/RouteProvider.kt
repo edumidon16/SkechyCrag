@@ -5,4 +5,5 @@ import javax.inject.Singleton
 
 @Singleton
 class RouteProvider @Inject constructor() {
+    var routeList:List<RouteModel> = emptyList<RouteModel>()
 }
