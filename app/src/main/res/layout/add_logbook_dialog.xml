@@ -3,34 +3,35 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="24dp">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+
         <TextView
             android:id="@+id/routeNameTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="2"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_marginBottom="16dp"/>
+            android:text="Route Name"/>
+
         <TextView
             android:id="@+id/routeTypeTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_marginBottom="16dp"
-            android:layout_marginLeft="30dp"
-            />
+            android:text="Route Type"
+            android:layout_marginStart="16dp"/>
 
     </LinearLayout>
-    <!-- Name of the route -->
 
-
-    <!-- ComboBox with three options -->
     <Spinner
         android:id="@+id/comboBox"
         android:layout_width="match_parent"
@@ -38,12 +39,12 @@
         android:entries="@array/route_options"
         android:layout_marginBottom="16dp"/>
 
-    <!-- EditText for grade -->
     <EditText
         android:id="@+id/gradeEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Grade"
+        android:inputType="text"
         android:layout_marginBottom="16dp"/>
 
     <EditText
@@ -51,13 +52,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Comment"
+        android:inputType="textMultiLine"
         android:maxLines="5"
+        android:scrollbars="vertical"
         android:layout_marginBottom="16dp"/>
 
     <Button
         android:id="@+id/addButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add"/>
+        android:text="Add"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/primaryColor"
+        android:textColor="@android:color/white"/>
 
 </LinearLayout>

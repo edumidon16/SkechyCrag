@@ -12,7 +12,8 @@ import javax.inject.Inject
 
 class DetailAdapter(
     var routeList:List<RouteModel> = emptyList(),
-    private val onItemSelected: (UserRouteModel) -> Unit
+    private val onItemSelected: (UserRouteModel) -> Unit,
+    private val showInfoDialog: (RouteModel) -> Unit
 ):RecyclerView.Adapter<DetailViewHolder>() {
 
     fun updateList(routeList: List<RouteModel>) {
@@ -30,6 +31,6 @@ class DetailAdapter(
     }
 
     override fun onBindViewHolder(viewHolder: DetailViewHolder, position: Int) {
-        viewHolder.bind(routeList[position], onItemSelected)
+        viewHolder.bind(routeList[position], onItemSelected, showInfoDialog)
     }
 }

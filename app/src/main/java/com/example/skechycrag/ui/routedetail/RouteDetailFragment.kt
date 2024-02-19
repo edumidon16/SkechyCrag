@@ -1,10 +1,15 @@
 package com.example.skechycrag.ui.routedetail
 
+import android.app.Dialog
+import android.graphics.Color
 import android.os.Bundle
+import android.os.Message
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageButton
+import android.widget.TextView
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -14,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.skechycrag.R
 import com.example.skechycrag.databinding.FragmentRouteDetailBinding
 import com.example.skechycrag.databinding.FragmentSearchBinding
+import com.example.skechycrag.ui.model.MoreInfoRouteModel
 import com.example.skechycrag.ui.model.RouteModel
 import com.example.skechycrag.ui.model.UserRouteModel
 import com.example.skechycrag.ui.routedetail.adapter.DetailAdapter
@@ -22,6 +28,7 @@ import com.example.skechycrag.ui.search.adapter.SearchAdapter
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.observeOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -46,6 +53,10 @@ class RouteDetailFragment : Fragment() {
         _binding = FragmentRouteDetailBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -58,10 +69,18 @@ class RouteDetailFragment : Fragment() {
         binding.cragNameTextView.text = cragName
 
 
-        routeDetailAdapter = DetailAdapter(){addRouteLogBook(it)}
+        routeDetailAdapter = DetailAdapter(
+            onItemSelected = { userRouteModel ->
+                addRouteLogBook(userRouteModel)
+            },
+            showInfoDialog = { userRouteModel ->
+                showMoreInfoDialog(userRouteModel)
+            }
+        )
         binding.routesRecyclerView.setHasFixedSize(true)
         binding.routesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.routesRecyclerView.adapter = routeDetailAdapter
+
 
         if(cragName != null){
             routeDetailViewModel.searchByName(cragName!!)
@@ -97,6 +116,73 @@ class RouteDetailFragment : Fragment() {
         )
         routeDetailViewModel.addRouteToLogBook(completeRoute)
     }
+    private fun showMoreInfoDialog(route: RouteModel) {
+
+        val dialogView =
+            LayoutInflater.from(requireContext()).inflate(R.layout.more_info_dialog, null)
+        val dialog = Dialog(requireContext())
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(true)
+        dialog.setContentView(dialogView)
+
+        // Set dialog size
+        val layoutParams = WindowManager.LayoutParams()
+        layoutParams.copyFrom(dialog.window?.attributes)
+        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT
+        layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT
+        dialog.window?.attributes = layoutParams
+
+        val routeName = dialogView.findViewById<TextView>(R.id.textViewRouteName)
+        val bookGrade = dialogView.findViewById<TextView>(R.id.textViewBookGrade)
+        val communityGrade = dialogView.findViewById<TextView>(R.id.textViewCommunityGrade)
+        val comments = dialogView.findViewById<TextView>(R.id.textViewComments)
+        val alertButton = dialogView.findViewById<ImageButton>(R.id.alertButton)
+        val nextCommentButton = dialogView.findViewById<Button>(R.id.addCommentButton)
+
+        var currentCommentIndex = 0
+        var alertExist = false
+
+        routeDetailViewModel.moreInfoRoute(route.route_name)
+
+        routeDetailViewModel.moreInfoState.observe(viewLifecycleOwner){moreInfoList ->
+            moreInfoList.let {
+                for(moreInfo in moreInfoList){
+                    if(moreInfo.alert != ""){
+                        alertExist = true
+                    }
+                }
+                routeName.text = route.route_name
+                bookGrade.text = "Book Grade: "+ route.grade
+                routeDetailViewModel.calculateRouteAverageGrade(route.grade, moreInfoList)
+                // Display the first comment initially
+                comments.text = moreInfoList[currentCommentIndex].username + ": " +moreInfoList[currentCommentIndex].comment
+                // Set up the alert button to show the next comment on each click
+                nextCommentButton.setOnClickListener {
+                    // Increment the index to point to the next comment, wrapping around if at the end
+                    currentCommentIndex = (currentCommentIndex + 1) % moreInfoList.size
+                    // Update the comments TextView with the next comment
+                    comments.text = moreInfoList[currentCommentIndex].username + ": " +moreInfoList[currentCommentIndex].comment
+                }
+                alertButton.setOnClickListener {
+                    if(alertExist){
+
+
+                    }else{
+                        Snackbar.make(requireView(), "There are not any alert", Snackbar.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+        routeDetailViewModel.averageGrade.observe(viewLifecycleOwner){ averageGrade ->
+            // Update the UI with the calculated average grade
+            communityGrade.text = "Community Grade: " + averageGrade
+
+        }
+        dialog.show()
+    }
+
+
+
 
     private fun startState() {
 

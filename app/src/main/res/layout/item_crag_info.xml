@@ -3,44 +3,50 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/cvLH"
-    android:layout_marginHorizontal="@dimen/cvMarginhorizontal"
-    android:layout_marginVertical="@dimen/cvMarginVertical"
-    app:cardCornerRadius="@dimen/cvCornerRadius"
-    app:cardElevation="@dimen/cwCardElevation">
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp">
 
-
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/ic_image_item"
-            android:scaleType="centerCrop"/>
+        android:layout_height="wrap_content"> <!-- Using RelativeLayout for overlay -->
 
+        <ImageView
+            android:id="@+id/ivCragImage"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_image_item" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:alpha="0.3"
+            android:background="@android:color/black" /> <!-- Overlay to improve text visibility -->
 
         <TextView
             android:id="@+id/tvCragName"
-            android:layout_width="@dimen/tvlayoutWidthCW"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/tvMarginLeftCV"
-            android:layout_marginTop="@dimen/tvLayoutMarginTop"
-            android:textColor="@color/black"
-            android:textSize="30sp"
-            tools:text="hola" />
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:textColor="@android:color/white"
+            android:textSize="24sp"
+            tools:text="Crag Name" />
 
         <TextView
             android:id="@+id/tvNumberRoutes"
-            android:layout_width="@dimen/tvlayoutWidthCW"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/tvMarginLeftCV"
-            android:layout_marginTop="@dimen/MartginTopTVCI"
-            android:textColor="@color/black"
-            android:textSize="25sp"
-            tools:text="hola" />
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="48dp"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            tools:text="Number of Routes" />
 
-    </FrameLayout>
-
+    </RelativeLayout>
 
 </androidx.cardview.widget.CardView>
+

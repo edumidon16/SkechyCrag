@@ -1,6 +1,7 @@
 package com.example.skechycrag.data.network
 
 import com.example.skechycrag.data.model.route.RouteModel
+import com.example.skechycrag.data.model.user.MoreInfoRouteModel
 import com.example.skechycrag.data.model.user.UserModel
 import com.example.skechycrag.data.model.user.UserRouteModel
 import com.google.firebase.firestore.DocumentId
@@ -48,6 +49,37 @@ class UserServices @Inject constructor(
                 // Log the error or print stack trace
                 e.printStackTrace() // Use Log.e if in an Android environment
                 emptyList<UserRouteModel>()
+            }
+        }
+    }
+
+    suspend fun getMoreInfoRoute(routeId: String): List<MoreInfoRouteModel> {
+        return withContext(Dispatchers.IO) {
+            val commentsList = mutableListOf<MoreInfoRouteModel>()
+            try {
+                // Get a list of all user documents in the UserRoutesTable
+                val usersSnapshot = db.collection("UserRoutesTable").get().await()
+                // Loop through each user document
+                for (userDocument in usersSnapshot.documents) {
+                    // For each user, retrieve the comments from the routeId
+                    val userId = userDocument.id
+                    val commentSnapshot = db.collection("UserRoutesTable")
+                        .document(userId)
+                        .collection("Comments")
+                        .document(routeId)
+                        .get()
+                        .await()
+
+                    // Map each comment document to a CommentModel object and add to the list
+                    commentSnapshot.toObject(MoreInfoRouteModel::class.java)?.let {
+                        commentsList.add(it)
+                    }
+                }
+                commentsList // Return the list of comments
+            } catch (e: Exception) {
+                // Handle any errors here
+                e.printStackTrace() // Use Log.e if in an Android environment
+                emptyList<MoreInfoRouteModel>()
             }
         }
     }

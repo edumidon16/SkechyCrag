@@ -23,18 +23,20 @@ class DetailViewHolder(
     private val binding = ItemCragDetailBinding.bind(view)
 
 
-    fun bind(route: RouteModel, onItemSelected: (UserRouteModel) -> Unit) {
+    fun bind(route: RouteModel, onItemSelected: (UserRouteModel) -> Unit, showInfoDialog: (RouteModel) -> Unit) {
         binding.routeNameTextView.text = route.route_name
-        binding.routeTypeTextView.text = route.type
+        //binding.routeTypeTextView.text = route.type
         binding.routeGradeTextView.text = route.grade
-        binding.routeTypeTextView.text = route.type
         binding.addLogBookButton.setOnClickListener {
-            showDialog(route.route_name, route.type, onItemSelected)
+            showAddDialog(route.route_name, route.type, onItemSelected)
+        }
+        binding.infoButton.setOnClickListener {
+            showInfoDialog(route)
         }
 
     }
 
-    private fun showDialog(
+    private fun showAddDialog(
         routeName: String,
         type: String,
         onItemSelected: (UserRouteModel) -> Unit

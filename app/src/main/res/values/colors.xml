@@ -9,5 +9,10 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="blue">#2196F3</color>
+    <color name="red">#FB0000</color>
 
+    <color name="primaryColor">#8CF590</color>
+
+    <!-- Light Background -->
+    <color name="lightBackground">#F5F5F5</color>
 </resources>

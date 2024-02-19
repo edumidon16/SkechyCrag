@@ -1,9 +1,15 @@
 package com.example.skechycrag.ui.routedetail
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.skechycrag.domain.CalculateRouteGradeAverageUseCase
+import com.example.skechycrag.domain.GetMoreInforRouteUseCase
 import com.example.skechycrag.domain.GetRouteDetailUseCase
 import com.example.skechycrag.ui.constants.Constants.Companion.USERNAME
+import com.example.skechycrag.ui.model.MoreInfoRouteModel
+import com.example.skechycrag.ui.model.RouteModel
 import com.example.skechycrag.ui.model.UserRouteModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,11 +20,20 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RouteDetailViewModel @Inject constructor(
-    private val getRouteDetailUseCase: GetRouteDetailUseCase
+    private val getRouteDetailUseCase: GetRouteDetailUseCase,
+    private val getMoreInfoRouteUseCase: GetMoreInforRouteUseCase,
+    private val calculateRouteGradeAverageUseCase: CalculateRouteGradeAverageUseCase
 ) : ViewModel() {
 
     private val _routeDetailState = MutableStateFlow<RouteDetailState>(RouteDetailState.Start)
     val routeDetailState: StateFlow<RouteDetailState> = _routeDetailState
+
+
+    private val _moreInfoState = MutableLiveData<List<MoreInfoRouteModel>>()
+    val moreInfoState: LiveData<List<MoreInfoRouteModel>> = _moreInfoState
+
+    private val _averageGrade = MutableLiveData<String>()
+    val averageGrade: LiveData<String> get() = _averageGrade
 
     fun searchByName(cragName: String) {
         _routeDetailState.update { RouteDetailState.Loading }
@@ -54,5 +69,31 @@ class RouteDetailViewModel @Inject constructor(
             )
             getRouteDetailUseCase.addRouteToLogBook(addRoute)
         }
+    }
+    fun moreInfoRoute(routeName : String){
+        viewModelScope.launch {
+            var moreInfoRoute = getMoreInfoRouteUseCase(routeName)
+
+            if (!moreInfoRoute.isNullOrEmpty()) {
+                val uiMoreInfoRouteDetail = moreInfoRoute.map { dataMoreInfoRouteModel ->
+                    // Convert data layer CragModel to UI layer CragModel here
+                    com.example.skechycrag.ui.model.MoreInfoRouteModel(
+                        username = dataMoreInfoRouteModel.username,
+                        comment = dataMoreInfoRouteModel.comment,
+                        grade = dataMoreInfoRouteModel.grade,
+                        alert = dataMoreInfoRouteModel.alert
+                    )
+                }
+                _moreInfoState.value = uiMoreInfoRouteDetail
+            } else {
+                _moreInfoState.value = null
+            }
         }
     }
+    fun calculateRouteAverageGrade(bookGrade: String, moreInfoList: List<MoreInfoRouteModel>?){
+        viewModelScope.launch {
+            val average = calculateRouteGradeAverageUseCase(bookGrade, moreInfoList)
+            _averageGrade.value = average
+        }
+    }
+}

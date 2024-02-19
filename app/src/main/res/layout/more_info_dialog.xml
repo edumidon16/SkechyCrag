@@ -1,0 +1,94 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/textViewRouteName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:hint="Route Name"
+            android:layout_marginTop="12dp"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:textColor="@color/primaryColor" />
+
+        <ImageButton
+            android:id="@+id/alertButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_info"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/info" />
+
+    </RelativeLayout>
+
+    <View
+        style="@style/DividerStyle"
+        android:layout_marginTop="5dp"
+        />
+
+    <TextView
+        android:id="@+id/textViewBookGrade"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Book Grade: "
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:paddingVertical="8dp" />
+
+
+
+    <View
+        style="@style/DividerStyle"/>
+    <TextView
+        android:id="@+id/textViewCommunityGrade"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Community Grade: "
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:paddingVertical="8dp" />
+
+
+    <View
+        style="@style/DividerStyle" />
+
+    <TextView
+        android:id="@+id/textViewComments"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Comments"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:paddingVertical="8dp" />
+
+    <Button
+        android:id="@+id/addCommentButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Show More Comments"
+        android:textStyle="bold"
+        android:backgroundTint="@color/primaryColor"
+        android:textColor="@color/white"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/createAlertButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create New Alert"
+        android:textStyle="bold"
+        android:backgroundTint="@color/black"
+        android:textColor="@color/white"
+        android:layout_marginBottom="16dp"/>
+
+</LinearLayout>
