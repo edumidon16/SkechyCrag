@@ -7,5 +7,5 @@ import javax.inject.Singleton
 @Singleton
 class UserProvider @Inject constructor() {
      var user:UserModel? = null
-
+     var userLevelList: MutableList<Double> = mutableListOf()
 }

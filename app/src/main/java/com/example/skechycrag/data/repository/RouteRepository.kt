@@ -2,6 +2,7 @@ package com.example.skechycrag.data.repository
 
 import com.example.skechycrag.data.model.route.RouteModel
 import com.example.skechycrag.data.model.route.RouteProvider
+import com.example.skechycrag.data.model.user.MoreInfoRouteModel
 import com.example.skechycrag.data.model.user.UserProvider
 import com.example.skechycrag.data.model.user.UserRouteModel
 import com.example.skechycrag.data.network.RouteServices
@@ -16,12 +17,12 @@ class RouteRepository @Inject constructor(
     suspend fun getAllRoutesFromCrag(name: String): List<RouteModel> {
         var cragRouteList = routeServices.getAllRoutesFromCrag(name)
         for(route in cragRouteList){
-            routeProvider.routeList += route
+            routeProvider.routeList.add(route)
         }
         return cragRouteList
     }
 
-    suspend fun addRouteToLogBook(route: UserRouteModel) {
+    suspend fun addRouteToLogBook(route: UserRouteModel, commentRoute: MoreInfoRouteModel) {
         val userId = userProvider.user?.user_id
         var routeId = ""
         val routeName = route.route_name
@@ -31,7 +32,7 @@ class RouteRepository @Inject constructor(
             }
         }
         if(userId != null && routeId != ""){
-            routeServices.addRouteToLogBook(userId,routeId, route)
+            routeServices.addRouteToLogBook(userId,routeId, route, commentRoute)
         }
     }
 }

@@ -25,7 +25,6 @@ class DetailViewHolder(
 
     fun bind(route: RouteModel, onItemSelected: (UserRouteModel) -> Unit, showInfoDialog: (RouteModel) -> Unit) {
         binding.routeNameTextView.text = route.route_name
-        //binding.routeTypeTextView.text = route.type
         binding.routeGradeTextView.text = route.grade
         binding.addLogBookButton.setOnClickListener {
             showAddDialog(route.route_name, route.type, onItemSelected)

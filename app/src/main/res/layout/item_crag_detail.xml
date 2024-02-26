@@ -25,7 +25,7 @@
         android:layout_weight="1"
         android:gravity="center"
         android:hint="6c+"
-        android:textColor="@color/blue"
+        android:textColor="@color/black"
         android:textSize="16sp" />
     <LinearLayout
         android:layout_width="wrap_content"

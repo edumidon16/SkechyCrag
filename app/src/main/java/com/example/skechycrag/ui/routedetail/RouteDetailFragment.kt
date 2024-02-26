@@ -1,34 +1,28 @@
 package com.example.skechycrag.ui.routedetail
 
 import android.app.Dialog
-import android.graphics.Color
 import android.os.Bundle
-import android.os.Message
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.skechycrag.R
 import com.example.skechycrag.databinding.FragmentRouteDetailBinding
-import com.example.skechycrag.databinding.FragmentSearchBinding
 import com.example.skechycrag.ui.model.MoreInfoRouteModel
 import com.example.skechycrag.ui.model.RouteModel
 import com.example.skechycrag.ui.model.UserRouteModel
 import com.example.skechycrag.ui.routedetail.adapter.DetailAdapter
-import com.example.skechycrag.ui.search.SearchDetailState
-import com.example.skechycrag.ui.search.adapter.SearchAdapter
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.observeOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -37,6 +31,10 @@ class RouteDetailFragment : Fragment() {
 
     private var _binding: FragmentRouteDetailBinding? = null
     private val binding get() = _binding!!
+
+    private var currentDialog: Dialog? = null
+    private var currentInfoObserver: Observer<List<MoreInfoRouteModel>?>? = null
+    private var currentGradeObserver: Observer<String>? = null
 
     //ViewModel
     private val routeDetailViewModel: RouteDetailViewModel by viewModels()
@@ -53,6 +51,7 @@ class RouteDetailFragment : Fragment() {
         _binding = FragmentRouteDetailBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -82,7 +81,7 @@ class RouteDetailFragment : Fragment() {
         binding.routesRecyclerView.adapter = routeDetailAdapter
 
 
-        if(cragName != null){
+        if (cragName != null) {
             routeDetailViewModel.searchByName(cragName!!)
         }
 
@@ -94,7 +93,7 @@ class RouteDetailFragment : Fragment() {
                         RouteDetailState.Loading -> loadingState()
                         RouteDetailState.Start -> startState()
                         is RouteDetailState.Success -> {
-                            withContext(Dispatchers.Main){
+                            withContext(Dispatchers.Main) {
                                 routeDetailAdapter.updateList(cragInfo.cragInfo)
                                 binding.progressBar.isVisible = false
                             }
@@ -105,7 +104,7 @@ class RouteDetailFragment : Fragment() {
         }
     }
 
-    private fun addRouteLogBook(route: UserRouteModel){
+    private fun addRouteLogBook(route: UserRouteModel) {
         var completeRoute = UserRouteModel(
             crag_name = cragName!!,
             route_name = route.route_name,
@@ -116,7 +115,10 @@ class RouteDetailFragment : Fragment() {
         )
         routeDetailViewModel.addRouteToLogBook(completeRoute)
     }
+
     private fun showMoreInfoDialog(route: RouteModel) {
+
+        currentDialog?.dismiss()
 
         val dialogView =
             LayoutInflater.from(requireContext()).inflate(R.layout.more_info_dialog, null)
@@ -141,64 +143,140 @@ class RouteDetailFragment : Fragment() {
 
         var currentCommentIndex = 0
         var alertExist = false
+        // Fetch the data
+        routeDetailViewModel.moreInfoRoute(route.route_name, route.grade)
 
-        routeDetailViewModel.moreInfoRoute(route.route_name)
+        currentGradeObserver?.let { routeDetailViewModel.averageGrade.removeObserver(it) }
 
-        routeDetailViewModel.moreInfoState.observe(viewLifecycleOwner){moreInfoList ->
-            moreInfoList.let {
-                for(moreInfo in moreInfoList){
-                    if(moreInfo.alert != ""){
-                        alertExist = true
-                    }
+        routeDetailViewModel.moreInfoState.observe(viewLifecycleOwner) { moreInfoState ->
+            when (moreInfoState) {
+                is CommunityState.Start -> TODO()
+                is CommunityState.Loading -> {
+                    // Show loading indicator or prepare UI for new data
+                    print("loading")
                 }
-                routeName.text = route.route_name
-                bookGrade.text = "Book Grade: "+ route.grade
-                routeDetailViewModel.calculateRouteAverageGrade(route.grade, moreInfoList)
-                // Display the first comment initially
-                comments.text = moreInfoList[currentCommentIndex].username + ": " +moreInfoList[currentCommentIndex].comment
-                // Set up the alert button to show the next comment on each click
-                nextCommentButton.setOnClickListener {
-                    // Increment the index to point to the next comment, wrapping around if at the end
-                    currentCommentIndex = (currentCommentIndex + 1) % moreInfoList.size
-                    // Update the comments TextView with the next comment
-                    comments.text = moreInfoList[currentCommentIndex].username + ": " +moreInfoList[currentCommentIndex].comment
+                is CommunityState.Error -> {
+                    // Handle error, e.g., show an error message
+                    Snackbar.make(
+                        requireView(),
+                        "Error: Zero feedback on this route",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
                 }
-                alertButton.setOnClickListener {
-                    if(alertExist){
+                is CommunityState.Success -> {
+                    if (moreInfoState.moreInfoList == null || moreInfoState.moreInfoList.isEmpty()) {
+                        Snackbar.make(
+                            requireView(),
+                            "Error: Zero feedback on this route",
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        routeName.text = route.route_name
+                        bookGrade.text = "Book Grade: " + route.grade
 
-
-                    }else{
-                        Snackbar.make(requireView(), "There are not any alert", Snackbar.LENGTH_SHORT).show()
+                        comments.text =
+                            moreInfoState.moreInfoList[currentCommentIndex].username + ": " + moreInfoState.moreInfoList[currentCommentIndex].comment
+                        // Set up the alert button to show the next comment on each click
+                        nextCommentButton.setOnClickListener {
+                            // Increment the index to point to the next comment, wrapping around if at the end
+                            currentCommentIndex =
+                                (currentCommentIndex + 1) % moreInfoState.moreInfoList.size
+                            // Update the comments TextView with the next comment
+                            comments.text =
+                                moreInfoState.moreInfoList[currentCommentIndex].username + ": " + moreInfoState.moreInfoList[currentCommentIndex].comment
+                        }
+                        routeDetailViewModel.getCommunityGrade()
+                        // Before showing the new dialog, dismiss the old one
+                        currentDialog?.dismiss()
+                        dialog.show()
+                        // Update the reference to the current dialog
+                        currentDialog = dialog
+                        alertButton.setOnClickListener {
+                            showAlertDialog(moreInfoState.moreInfoList)
+                        }
                     }
+
+                    val gradeObserver = Observer<String> { averageGrade ->
+                        // Update the UI with the calculated average grade
+                        communityGrade.text = "Community Grade: " + averageGrade
+                    }
+                    currentGradeObserver = gradeObserver
+                    routeDetailViewModel.averageGrade.observe(viewLifecycleOwner, gradeObserver)
+
                 }
             }
         }
-        routeDetailViewModel.averageGrade.observe(viewLifecycleOwner){ averageGrade ->
-            // Update the UI with the calculated average grade
-            communityGrade.text = "Community Grade: " + averageGrade
-
-        }
-        dialog.show()
     }
 
 
+    private fun showAlertDialog(moreInfoList: List<MoreInfoRouteModel>) {
+        var alertList = mutableListOf<String>()
+        var currentAlertIndex = 0
+        for (data in moreInfoList) {
+            if (!data.alert.isNullOrEmpty() && data.alert != "") {
+                val newAlert = data.username + ": " + data.alert
+                alertList.add(newAlert)
+            }
+        }
+        if (alertList.size > currentAlertIndex) {
+            val dialog = Dialog(requireContext())
+            dialog.setContentView(R.layout.alert_dialog)
 
+            val tvAlertMessage = dialog.findViewById<TextView>(R.id.tvAlertMessage)
+            val tvAlertCount = dialog.findViewById<TextView>(R.id.tvAlertCount)
+
+            tvAlertMessage.text = alertList[currentAlertIndex]
+            currentAlertIndex++
+            tvAlertCount.text = "Alert ${currentAlertIndex}/${alertList.size}"
+
+            val btnNext = dialog.findViewById<Button>(R.id.btnNextAlert)
+            btnNext.setOnClickListener {
+                if (alertList.size > currentAlertIndex) {
+                    tvAlertMessage.text = alertList[currentAlertIndex]
+                    currentAlertIndex++
+                    tvAlertCount.text = "Alert ${currentAlertIndex}/${alertList.size}"
+                } else {
+                    currentAlertIndex = 0
+                    tvAlertMessage.text = alertList[currentAlertIndex]
+                    currentAlertIndex++
+                    tvAlertCount.text = "Alert ${currentAlertIndex}/${alertList.size}"
+                }
+            }
+
+            // Handling the close button click
+            val btnCloseAlert = dialog.findViewById<Button>(R.id.btnCloseAlert)
+            btnCloseAlert.setOnClickListener {
+                dialog.dismiss() // Close the dialog
+            }
+            dialog.show()
+        } else {
+            Snackbar.make(
+                requireView(),
+                "There are not any alert for this route",
+                Snackbar.LENGTH_SHORT
+            ).show()
+        }
+
+    }
 
     private fun startState() {
 
     }
 
     private suspend fun loadingState() {
-        withContext(Dispatchers.Main){
+        withContext(Dispatchers.Main) {
             binding.progressBar.isVisible = true
         }
     }
 
     private suspend fun errorState() {
-        withContext(Dispatchers.Main){
+        withContext(Dispatchers.Main) {
             binding.progressBar.isVisible = false
         }
         Snackbar.make(requireView(), "Error: Crag not found", Snackbar.LENGTH_SHORT).show()
     }
 
+
 }
+
+

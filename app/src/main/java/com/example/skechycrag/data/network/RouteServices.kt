@@ -2,6 +2,7 @@ package com.example.skechycrag.data.network
 
 import android.util.Log
 import com.example.skechycrag.data.model.route.RouteModel
+import com.example.skechycrag.data.model.user.MoreInfoRouteModel
 import com.example.skechycrag.data.model.user.UserRouteModel
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Source
@@ -31,14 +32,26 @@ class RouteServices @Inject constructor(
 
     }
 
-    suspend fun addRouteToLogBook(user_id:String, routeId:String, route: UserRouteModel) {
+    suspend fun addRouteToLogBook(user_id: String, routeId: String, route: UserRouteModel, commentRoute:MoreInfoRouteModel ) {
         withContext(Dispatchers.IO) {
             try {
+                val commentR = hashMapOf<String, Any>(
+                    "username" to commentRoute.username,
+                    "comment" to commentRoute.comment,
+                    "grade" to commentRoute.grade,
+                    "alert" to commentRoute.alert
+                )
                 // Add a new document with a generated ID in subcollection 'Routes' under the user's document
                 db.collection("UserRoutesTable").document(user_id)
                     .collection("Routes").document(routeId)
                     .set(route)
                     .await()
+
+                db.collection("UserRoutesTable").document(user_id)
+                    .collection("Comments").document(routeId)
+                    .set(commentR)
+                    .await()
+
                 Log.d("addRouteToLogBook", "Route successfully written!")
             } catch (e: Exception) {
                 // Handle any errors here

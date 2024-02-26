@@ -1,9 +1,12 @@
 package com.example.skechycrag.data.model.route
 
+import com.example.skechycrag.data.model.user.MoreInfoRouteModel
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class RouteProvider @Inject constructor() {
-    var routeList:List<RouteModel> = emptyList<RouteModel>()
+    var routeList:MutableList<RouteModel> = mutableListOf()
+    var routeIdProvide: MutableList<String> = mutableListOf()
+    var climberList: MutableList<List<MoreInfoRouteModel>> = mutableListOf()
 }

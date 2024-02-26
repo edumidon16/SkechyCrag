@@ -4,12 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.skechycrag.domain.CalculateRouteGradeAverageUseCase
-import com.example.skechycrag.domain.GetMoreInforRouteUseCase
+import com.example.skechycrag.domain.GetMoreInfoRouteUseCase
 import com.example.skechycrag.domain.GetRouteDetailUseCase
-import com.example.skechycrag.ui.constants.Constants.Companion.USERNAME
 import com.example.skechycrag.ui.model.MoreInfoRouteModel
-import com.example.skechycrag.ui.model.RouteModel
 import com.example.skechycrag.ui.model.UserRouteModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,16 +18,14 @@ import javax.inject.Inject
 @HiltViewModel
 class RouteDetailViewModel @Inject constructor(
     private val getRouteDetailUseCase: GetRouteDetailUseCase,
-    private val getMoreInfoRouteUseCase: GetMoreInforRouteUseCase,
-    private val calculateRouteGradeAverageUseCase: CalculateRouteGradeAverageUseCase
+    private val getMoreInfoRouteUseCase: GetMoreInfoRouteUseCase,
 ) : ViewModel() {
 
     private val _routeDetailState = MutableStateFlow<RouteDetailState>(RouteDetailState.Start)
     val routeDetailState: StateFlow<RouteDetailState> = _routeDetailState
 
-
-    private val _moreInfoState = MutableLiveData<List<MoreInfoRouteModel>>()
-    val moreInfoState: LiveData<List<MoreInfoRouteModel>> = _moreInfoState
+    private val _moreInfoState = MutableLiveData<CommunityState>()
+    val moreInfoState: LiveData<CommunityState> = _moreInfoState
 
     private val _averageGrade = MutableLiveData<String>()
     val averageGrade: LiveData<String> get() = _averageGrade
@@ -47,7 +42,8 @@ class RouteDetailViewModel @Inject constructor(
                         crag_name = dataRouteModel.crag_name,
                         route_name = dataRouteModel.route_name,
                         grade = dataRouteModel.grade,
-                        type = dataRouteModel.type
+                        type = dataRouteModel.type,
+                        community_grade = dataRouteModel.community_grade
                     )
                 }
                 _routeDetailState.update { RouteDetailState.Success(uiRouteDetail) }
@@ -67,33 +63,38 @@ class RouteDetailViewModel @Inject constructor(
                 comment = route.comment,
                 tries = route.tries
             )
-            getRouteDetailUseCase.addRouteToLogBook(addRoute)
+            getRouteDetailUseCase.addRoute(addRoute)
         }
     }
-    fun moreInfoRoute(routeName : String){
+    fun moreInfoRoute(routeName: String, bookGrade: String) {
+        _moreInfoState.value = CommunityState.Loading
         viewModelScope.launch {
-            var moreInfoRoute = getMoreInfoRouteUseCase(routeName)
+            // Update LiveData to Loading or reset it before fetching new data
+            _moreInfoState.postValue(CommunityState.Loading)
+
+            val moreInfoRoute = getMoreInfoRouteUseCase(routeName, bookGrade)
 
             if (!moreInfoRoute.isNullOrEmpty()) {
                 val uiMoreInfoRouteDetail = moreInfoRoute.map { dataMoreInfoRouteModel ->
-                    // Convert data layer CragModel to UI layer CragModel here
-                    com.example.skechycrag.ui.model.MoreInfoRouteModel(
+                    MoreInfoRouteModel(
                         username = dataMoreInfoRouteModel.username,
                         comment = dataMoreInfoRouteModel.comment,
                         grade = dataMoreInfoRouteModel.grade,
                         alert = dataMoreInfoRouteModel.alert
                     )
                 }
-                _moreInfoState.value = uiMoreInfoRouteDetail
+                _moreInfoState.postValue(CommunityState.Success(uiMoreInfoRouteDetail))
             } else {
-                _moreInfoState.value = null
+                _moreInfoState.postValue(CommunityState.Error)
             }
         }
     }
-    fun calculateRouteAverageGrade(bookGrade: String, moreInfoList: List<MoreInfoRouteModel>?){
+
+
+    fun getCommunityGrade() {
         viewModelScope.launch {
-            val average = calculateRouteGradeAverageUseCase(bookGrade, moreInfoList)
-            _averageGrade.value = average
+            val communityGrade = getMoreInfoRouteUseCase.communityGrade
+            _averageGrade.value = communityGrade
         }
     }
 }

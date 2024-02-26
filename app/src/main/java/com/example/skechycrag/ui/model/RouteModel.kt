@@ -5,5 +5,6 @@ data class RouteModel(
     val crag_name: String = "",
     val route_name: String = "",
     val grade: String = "",
-    val type: String = ""
+    val type: String = "",
+    var community_grade:String = ""
 )

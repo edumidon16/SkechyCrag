@@ -32,7 +32,7 @@
             android:layout_marginTop="130dp"
             android:layout_marginLeft="70dp"
             android:textSize="32dp"
-            android:textColor="@color/black"/>
+            android:textColor="@color/primaryColor"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
             android:layout_marginTop="130dp"
             android:layout_marginLeft="15dp"
             android:textSize="32dp"
-            android:textColor="@color/black"/>
+            android:textColor="@color/primaryColor"/>
 
     </LinearLayout>
 
@@ -64,7 +64,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/welcome"
-                android:textColor="@color/black"
+                android:textColor="@color/primaryColor"
                 android:textSize="32sp"
                 android:textStyle="bold"/>
             <TextView
@@ -129,12 +129,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="10dp"/>
 
-            <com.google.android.material.button.MaterialButton
+            <Button
                 android:id="@+id/btn_login"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:text="@string/login"
-                android:backgroundTint="@color/black"
+                android:backgroundTint="@color/primaryColor"
                 app:cornerRadius="32dp"/>
             <View
                 android:layout_width="wrap_content"

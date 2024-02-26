@@ -8,3 +8,4 @@ data class UserRouteModel(
     val comment: String = "",
     val tries: String = ""
 )
+
