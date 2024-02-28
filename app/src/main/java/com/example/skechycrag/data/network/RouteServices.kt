@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.skechycrag.data.model.route.RouteModel
 import com.example.skechycrag.data.model.user.MoreInfoRouteModel
 import com.example.skechycrag.data.model.user.UserRouteModel
+import com.example.skechycrag.ui.constants.Constants.Companion.USERNAME
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Source
 import kotlinx.coroutines.Dispatchers
@@ -56,6 +57,33 @@ class RouteServices @Inject constructor(
             } catch (e: Exception) {
                 // Handle any errors here
                 Log.e("addRouteToLogBook", "Error writing document", e)
+            }
+        }
+    }
+
+    suspend fun addAlert(userId: String?, alertMessage: String, routeId: String) {
+        withContext(Dispatchers.IO){
+            try{
+                if (userId != null) {
+                    val routeDocumentRef = db.collection("UserRoutesTable").document(userId)
+                        .collection("Comments").document(routeId)
+
+                    val snapshot = routeDocumentRef.get().await()
+                    if (snapshot.exists()) {
+                        // The route document exists, update the alert data
+                        routeDocumentRef.update("alert", alertMessage).await()
+                    } else {
+                        val newCommentData = hashMapOf(
+                            "username" to USERNAME,
+                            "alert" to alertMessage,
+                            "grade" to "", // Assuming default values, update as necessary
+                            "comment" to "" // Assuming default values, update as necessary
+                        )
+                        routeDocumentRef.set(newCommentData).await()
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }

@@ -1,10 +1,12 @@
 package com.example.skechycrag.ui.routedetail
 
+import android.app.DatePickerDialog
 import android.app.Dialog
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.core.view.isVisible
@@ -25,6 +27,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.*
 
 @AndroidEntryPoint
 class RouteDetailFragment : Fragment() {
@@ -113,6 +116,11 @@ class RouteDetailFragment : Fragment() {
             comment = route.comment,
             tries = route.tries
         )
+        Snackbar.make(
+            requireView(),
+            "Route added",
+            Snackbar.LENGTH_SHORT
+        ).show()
         routeDetailViewModel.addRouteToLogBook(completeRoute)
     }
 
@@ -140,9 +148,9 @@ class RouteDetailFragment : Fragment() {
         val comments = dialogView.findViewById<TextView>(R.id.textViewComments)
         val alertButton = dialogView.findViewById<ImageButton>(R.id.alertButton)
         val nextCommentButton = dialogView.findViewById<Button>(R.id.addCommentButton)
+        val createAlertButton = dialogView.findViewById<Button>(R.id.createAlertButton)
 
         var currentCommentIndex = 0
-        var alertExist = false
         // Fetch the data
         routeDetailViewModel.moreInfoRoute(route.route_name, route.grade)
 
@@ -194,6 +202,11 @@ class RouteDetailFragment : Fragment() {
                         alertButton.setOnClickListener {
                             showAlertDialog(moreInfoState.moreInfoList)
                         }
+
+                        createAlertButton.setOnClickListener{
+                            showCreateAlertDialog(route.route_name)
+                            dialog.dismiss()
+                        }
                     }
 
                     val gradeObserver = Observer<String> { averageGrade ->
@@ -204,6 +217,52 @@ class RouteDetailFragment : Fragment() {
                     routeDetailViewModel.averageGrade.observe(viewLifecycleOwner, gradeObserver)
 
                 }
+            }
+        }
+    }
+
+    private fun showCreateAlertDialog(routeName : String) {
+        val dialog = Dialog(requireContext())
+        dialog.setContentView(R.layout.create_alert_dialog)
+
+        val commentEditText = dialog.findViewById<EditText>(R.id.commentEditText)
+        val dateTextView = dialog.findViewById<TextView>(R.id.dateTextView)
+        val createAlertButton = dialog.findViewById<Button>(R.id.createAlertButton)
+        val calendar = Calendar.getInstance()
+        val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
+            val selectedDate = String.format("%02d/%02d/%04d", dayOfMonth, monthOfYear + 1, year)
+            dateTextView.text = selectedDate
+        }
+
+        dateTextView.setOnClickListener {
+            DatePickerDialog(requireContext(), dateSetListener,
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)).show()
+        }
+
+        dialog.show()
+
+        createAlertButton.setOnClickListener {
+            if(!commentEditText.text.isNullOrEmpty() && !dateTextView.text.isNullOrEmpty()){
+                val comment = commentEditText.text.toString().trim()
+                val date = dateTextView.text.toString().trim()
+                val combinedString = "$date - $comment"
+
+                routeDetailViewModel.addAlert(combinedString, routeName)
+                dialog.dismiss()
+
+                Snackbar.make(
+                    requireView(),
+                    "Alert added",
+                    Snackbar.LENGTH_SHORT
+                ).show()
+            }else{
+                Snackbar.make(
+                    requireView(),
+                    "Enter all the data required",
+                    Snackbar.LENGTH_SHORT
+                ).show()
             }
         }
     }

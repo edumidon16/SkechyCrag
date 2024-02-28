@@ -4,6 +4,7 @@ import com.example.skechycrag.data.model.user.MoreInfoRouteModel
 import com.example.skechycrag.data.model.user.UserModel
 import com.example.skechycrag.data.model.user.UserRouteModel
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Source
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -84,7 +85,7 @@ class UserServices @Inject constructor(
             val commentsList = mutableListOf<MoreInfoRouteModel>()
             try {
                 // Get a list of all user documents in the UserRoutesTable
-                val usersSnapshot = db.collection("UserRoutesTable").get().await()
+                val usersSnapshot = db.collection("UserRoutesTable").get(Source.SERVER).await()
                 // Loop through each user document
                 for (userDocument in usersSnapshot.documents) {
                     // For each user, retrieve the comments from the routeId
@@ -95,7 +96,7 @@ class UserServices @Inject constructor(
                         .document(userId)
                         .collection("Comments")
                         .document(routeId)
-                        .get()
+                        .get(Source.SERVER)
                         .await()
 
                     // Map each comment document to a MoreInfoRouteModel object and add to the list

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.skechycrag.domain.AddAlertUseCase
 import com.example.skechycrag.domain.GetMoreInfoRouteUseCase
 import com.example.skechycrag.domain.GetRouteDetailUseCase
 import com.example.skechycrag.ui.model.MoreInfoRouteModel
@@ -19,6 +20,7 @@ import javax.inject.Inject
 class RouteDetailViewModel @Inject constructor(
     private val getRouteDetailUseCase: GetRouteDetailUseCase,
     private val getMoreInfoRouteUseCase: GetMoreInfoRouteUseCase,
+    private val addAlertUseCase: AddAlertUseCase
 ) : ViewModel() {
 
     private val _routeDetailState = MutableStateFlow<RouteDetailState>(RouteDetailState.Start)
@@ -95,5 +97,12 @@ class RouteDetailViewModel @Inject constructor(
             val communityGrade = getMoreInfoRouteUseCase.communityGrade
             _averageGrade.value = communityGrade
         }
+    }
+
+    fun addAlert(alertMessage: String, routeName:String) {
+        viewModelScope.launch {
+            addAlertUseCase(alertMessage, routeName)
+        }
+
     }
 }

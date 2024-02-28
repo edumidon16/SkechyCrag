@@ -35,4 +35,38 @@ class RouteRepository @Inject constructor(
             routeServices.addRouteToLogBook(userId,routeId, route, commentRoute)
         }
     }
+
+    suspend fun addAlert(alertMessage: String, routeName: String) {
+        val userId = userProvider.user?.user_id
+        var routeId = ""
+        var routeIndex = -1 // Initialize with an invalid index
+
+        // Find the routeId by matching routeName
+        for (route in routeProvider.routeList) {
+            if (routeName == route.route_name) {
+                routeId = route.route_id
+                break // Found the matching route, no need to continue looping
+            }
+        }
+
+        // If routeId is found, find the index in routeIdProvide
+        if (routeId.isNotEmpty()) {
+            routeIndex = routeProvider.routeIdProvide.indexOf(routeId)
+        }
+
+        // Check if a valid index was found
+        if (routeIndex != -1) {
+            // Assuming climberList at the found index is the list of MoreInfoRouteModel for the routeId
+            val climbers = routeProvider.climberList[routeIndex] // Get the list of climbers for the route
+            // Update the alert for each MoreInfoRouteModel in the list
+            for (climber in climbers) {
+                climber.alert = alertMessage // Update the alert message
+                // Optionally, you can add more logic here if needed
+            }
+        }
+
+        // Call the service to add the alert to the database
+        routeServices.addAlert(userId, alertMessage, routeId)
+    }
+
 }
