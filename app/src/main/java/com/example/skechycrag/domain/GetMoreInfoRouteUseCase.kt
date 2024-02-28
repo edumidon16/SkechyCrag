@@ -16,7 +16,7 @@ class GetMoreInfoRouteUseCase @Inject constructor(
     }
     private  fun calculateCommunityGrade(bookGrade: String, communityGrades: List<MoreInfoRouteModel>?): String{
 
-        val bookWeight = 0.4 // Base weight for the book grade
+        val bookWeight = 0.3 // Base weight for the book grade
 
         var totalEffectiveLevels = 0.0
         var communityGradeSum = 0.0

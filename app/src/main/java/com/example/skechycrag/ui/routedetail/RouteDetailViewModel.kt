@@ -90,7 +90,6 @@ class RouteDetailViewModel @Inject constructor(
         }
     }
 
-
     fun getCommunityGrade() {
         viewModelScope.launch {
             val communityGrade = getMoreInfoRouteUseCase.communityGrade

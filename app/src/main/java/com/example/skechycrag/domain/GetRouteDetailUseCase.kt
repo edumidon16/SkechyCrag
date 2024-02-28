@@ -24,13 +24,18 @@ class GetRouteDetailUseCase @Inject constructor(
         )
         var user = userRepository.getUserLevel()
         user.let {
-
             var difficultSum = user?.difficultySum
             var numRoutes = user?.numRoutes?.plus(1)
             var gradeInDouble = convertGradeToNumber(route.grade)
             difficultSum = difficultSum?.plus( gradeInDouble.toInt())
-            //var level = difficultSum?.div(numRoutes!!)
-            var level = user?.level?.plus(gradeInDouble)
+
+            //We multiplicate the difficulty sum to the number of routes that has done - 1
+            //If a user has 27.0 of difficultySum with 3 routes, is equal to 26.19 of level
+            //If he does a 5 = 1 point, his difficultySum will be 28.0 with 4 routes, the level = 26.88
+            //Meaning that even if a good climber does a easy climb his level steal improves
+            var a = 1.0
+            var b = numRoutes?.div(100)?.toDouble()
+            var level = difficultSum?.times(a - b!!)
 
             if(level?.toDouble() != 0.0){
                 user?.level = level!!.toDouble()
