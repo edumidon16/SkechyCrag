@@ -6,6 +6,7 @@ import com.example.skechycrag.data.model.user.MoreInfoRouteModel
 import com.example.skechycrag.data.model.user.UserProvider
 import com.example.skechycrag.data.model.user.UserRouteModel
 import com.example.skechycrag.data.network.RouteServices
+import com.example.skechycrag.ui.constants.Constants.Companion.USERNAME
 import javax.inject.Inject
 
 class RouteRepository @Inject constructor(
@@ -56,16 +57,13 @@ class RouteRepository @Inject constructor(
 
         // Check if a valid index was found
         if (routeIndex != -1) {
-            // Assuming climberList at the found index is the list of MoreInfoRouteModel for the routeId
-            val climbers = routeProvider.climberList[routeIndex] // Get the list of climbers for the route
-            // Update the alert for each MoreInfoRouteModel in the list
+            val climbers = routeProvider.climberList[routeIndex]
             for (climber in climbers) {
-                climber.alert = alertMessage // Update the alert message
-                // Optionally, you can add more logic here if needed
+                if( climber.username == USERNAME){
+                    climber.alert = alertMessage
+                }
             }
         }
-
-        // Call the service to add the alert to the database
         routeServices.addAlert(userId, alertMessage, routeId)
     }
 

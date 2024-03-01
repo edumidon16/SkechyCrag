@@ -150,7 +150,6 @@ class RouteDetailFragment : Fragment() {
         val nextCommentButton = dialogView.findViewById<Button>(R.id.addCommentButton)
         val createAlertButton = dialogView.findViewById<Button>(R.id.createAlertButton)
 
-        var currentCommentIndex = 0
         // Fetch the data
         routeDetailViewModel.moreInfoRoute(route.route_name, route.grade)
 
@@ -179,11 +178,12 @@ class RouteDetailFragment : Fragment() {
                             Snackbar.LENGTH_SHORT
                         ).show()
                     } else {
+                        var currentCommentIndex = 0
                         routeName.text = route.route_name
                         bookGrade.text = "Book Grade: " + route.grade
 
                         comments.text =
-                            moreInfoState.moreInfoList[currentCommentIndex].username + ": " + moreInfoState.moreInfoList[currentCommentIndex].comment
+                            moreInfoState.moreInfoList[currentCommentIndex].username + ": " + moreInfoState.moreInfoList[currentCommentIndex].comment + " (" + moreInfoState.moreInfoList[currentCommentIndex].grade + ")"
                         // Set up the alert button to show the next comment on each click
                         nextCommentButton.setOnClickListener {
                             // Increment the index to point to the next comment, wrapping around if at the end
@@ -191,7 +191,7 @@ class RouteDetailFragment : Fragment() {
                                 (currentCommentIndex + 1) % moreInfoState.moreInfoList.size
                             // Update the comments TextView with the next comment
                             comments.text =
-                                moreInfoState.moreInfoList[currentCommentIndex].username + ": " + moreInfoState.moreInfoList[currentCommentIndex].comment
+                                moreInfoState.moreInfoList[currentCommentIndex].username + ": " + moreInfoState.moreInfoList[currentCommentIndex].comment + " (" + moreInfoState.moreInfoList[currentCommentIndex].grade + ")"
                         }
                         routeDetailViewModel.getCommunityGrade()
                         // Before showing the new dialog, dismiss the old one
@@ -203,7 +203,7 @@ class RouteDetailFragment : Fragment() {
                             showAlertDialog(moreInfoState.moreInfoList)
                         }
 
-                        createAlertButton.setOnClickListener{
+                        createAlertButton.setOnClickListener {
                             showCreateAlertDialog(route.route_name)
                             dialog.dismiss()
                         }
@@ -221,7 +221,7 @@ class RouteDetailFragment : Fragment() {
         }
     }
 
-    private fun showCreateAlertDialog(routeName : String) {
+    private fun showCreateAlertDialog(routeName: String) {
         val dialog = Dialog(requireContext())
         dialog.setContentView(R.layout.create_alert_dialog)
 
@@ -229,22 +229,26 @@ class RouteDetailFragment : Fragment() {
         val dateTextView = dialog.findViewById<TextView>(R.id.dateTextView)
         val createAlertButton = dialog.findViewById<Button>(R.id.createAlertButton)
         val calendar = Calendar.getInstance()
-        val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
-            val selectedDate = String.format("%02d/%02d/%04d", dayOfMonth, monthOfYear + 1, year)
-            dateTextView.text = selectedDate
-        }
+        val dateSetListener =
+            DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
+                val selectedDate =
+                    String.format("%02d/%02d/%04d", dayOfMonth, monthOfYear + 1, year)
+                dateTextView.text = selectedDate
+            }
 
         dateTextView.setOnClickListener {
-            DatePickerDialog(requireContext(), dateSetListener,
+            DatePickerDialog(
+                requireContext(), dateSetListener,
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)).show()
+                calendar.get(Calendar.DAY_OF_MONTH)
+            ).show()
         }
 
         dialog.show()
 
         createAlertButton.setOnClickListener {
-            if(!commentEditText.text.isNullOrEmpty() && !dateTextView.text.isNullOrEmpty()){
+            if (!commentEditText.text.isNullOrEmpty() && !dateTextView.text.isNullOrEmpty()) {
                 val comment = commentEditText.text.toString().trim()
                 val date = dateTextView.text.toString().trim()
                 val combinedString = "$date - $comment"
@@ -257,7 +261,7 @@ class RouteDetailFragment : Fragment() {
                     "Alert added",
                     Snackbar.LENGTH_SHORT
                 ).show()
-            }else{
+            } else {
                 Snackbar.make(
                     requireView(),
                     "Enter all the data required",
