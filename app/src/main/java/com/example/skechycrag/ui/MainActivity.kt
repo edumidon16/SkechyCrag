@@ -22,6 +22,7 @@ class MainActivity : AppCompatActivity() {
             val bottomNavView: BottomNavigationView = findViewById(R.id.bottomNavView)
             when (destination.id) {
                 R.id.logInFragment -> bottomNavView.visibility = View.GONE
+                R.id.addFragment2 -> bottomNavView.visibility = View.GONE
                 else -> bottomNavView.visibility = View.VISIBLE
             }
         }

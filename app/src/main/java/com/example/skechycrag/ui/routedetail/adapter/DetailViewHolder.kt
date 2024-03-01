@@ -22,7 +22,6 @@ class DetailViewHolder(
 
     private val binding = ItemCragDetailBinding.bind(view)
 
-
     fun bind(route: RouteModel, onItemSelected: (UserRouteModel) -> Unit, showInfoDialog: (RouteModel) -> Unit) {
         binding.routeNameTextView.text = route.route_name
         binding.routeGradeTextView.text = route.grade
