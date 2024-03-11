@@ -6,5 +6,5 @@ sealed class AddState {
     data object Start : AddState()
     data object Loading : AddState()
     data class Error(val error: String) : AddState()
-    data class Success(val routeList: List<RouteInfo>) : AddState()
+    data class Success(val routeList: MutableList<RouteInfo>) : AddState()
 }

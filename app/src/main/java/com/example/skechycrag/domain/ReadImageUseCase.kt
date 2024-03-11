@@ -7,11 +7,11 @@ import javax.inject.Inject
 class ReadImageUseCase @Inject constructor(
     private val chatGPTRepository: ChatPTRRepository
 ){
-    suspend operator fun invoke(image: String) : List<RouteInfo>{
+    suspend operator fun invoke(image: String) : MutableList<RouteInfo>{
         var response = chatGPTRepository.readImage(image)
         return parseRoutes(response)
     }
-    private fun parseRoutes(response: String): List<RouteInfo> {
+    private fun parseRoutes(response: String): MutableList<RouteInfo> {
         return response
             .lineSequence() // Create a sequence of lines from the response
             .filter { it.isNotEmpty() } // Filter out any empty lines
@@ -27,7 +27,11 @@ class ReadImageUseCase @Inject constructor(
                 }
             }
             .filterNotNull() // Remove any null values resulting from invalid lines
-            .toList() // Convert the sequence to a list
+            .toMutableList() // Convert the sequence to a list
+    }
+
+    suspend fun addNewRoutes(cragName: String, newRoutesList: MutableList<RouteInfo>) {
+        chatGPTRepository.addNewRoutes(cragName, newRoutesList)
     }
 
 }

@@ -10,12 +10,8 @@ import com.example.skechycrag.ui.model.RouteInfo
 import com.example.skechycrag.ui.model.RouteModel
 import com.example.skechycrag.ui.model.UserRouteModel
 
+
 class ResponseViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-
-    private val binding = ItemRouteBinding.bind(view)
-
-    fun bind(route: RouteInfo, onItemSelected: (RouteInfo) -> Unit) {
-        binding.editTextRouteName.setText(route.routeName)
-        binding.editTextGrade.setText(route.grade)
-    }
+    val routeNameEditText: EditText = view.findViewById(R.id.editTextRouteName)
+    val gradeEditText: EditText = view.findViewById(R.id.editTextGrade)
 }

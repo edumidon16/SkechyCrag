@@ -1,76 +1,110 @@
 package com.example.skechycrag.data.network
 
 import android.util.Log
+import com.example.skechycrag.data.model.route.RouteInfo
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.util.concurrent.TimeUnit
+import javax.inject.Inject
+import kotlinx.serialization.json.*
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.IOException
-import javax.inject.Inject
+
 
 class ChatGPTServices @Inject constructor(
     private val db: FirebaseFirestore
 ) {
-    private val client = OkHttpClient()
 
-    suspend fun readImage(image: String): String {
 
-        return withContext(Dispatchers.IO) {
-            val question = "Extract and list only the crag names, route names, and grades from the image, starting immediately with the names and grades, without any introductions or additional commentary.\n" +
-                    "The response should look like this:\n" +
-                    "routeName - grade\n" +
-                    "routeName2 - grade2\n"
-            val apiKey = "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"
-            val url = "https://api.openai.com/v1/chat/completions"
-
-            val requestBody = """
-            {
-                "model": "gpt-4-vision-preview", 
-                "messages": [
-                    {
-                        "role": "user", 
-                        "content": [
-                            {"type": "text", "text": "$question"},
-                            {"type": "data", "data": "$image"}
-                        ]
-                    }
-                ],
-                "max_tokens": 500 
-            }
-            """.trimIndent()
-
-            val client = OkHttpClient()
-            val request = Request.Builder()
-                .url(url)
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Authorization", "Bearer $apiKey")
-                .post(requestBody.toRequestBody("application/json".toMediaTypeOrNull()))
-                .build()
-
+    suspend fun addNewRoutes(cragName: String, newRoutesList: MutableList<RouteInfo>) {
+        withContext(Dispatchers.IO) {
             try {
-                val response =
-                    client.newCall(request).execute() // Execute the request synchronously
-                val body = response.body?.string()
-
-                if (body != null) {
-                    val jsonObject = JSONObject(body)
-                    val jsonArray: JSONArray = jsonObject.getJSONArray("choices")
-                    val textResult =
-                        jsonArray.getJSONObject(0).getJSONObject("message").getString("content")
-                    return@withContext textResult // Return the text result
-                } else {
-                    Log.v("data", "empty")
-                    return@withContext "No response from API"
+                val numberRoutes = newRoutesList.size
+                val crag = hashMapOf(
+                    "crag_name" to cragName,
+                    "number_routes" to numberRoutes
+                )
+                db.collection("CragTable").add(crag)
+                    .addOnSuccessListener { documentReference ->
+                        // Document has been added successfully
+                        println("DocumentSnapshot added with ID: ${documentReference.id}")
+                    }
+                for (route in newRoutesList) {
+                    val newRoute = hashMapOf(
+                        "crag_name" to cragName,
+                        "route_name" to route.routeName,
+                        "grade" to route.grade,
+                        "type" to ""
+                    )
+                    db.collection("RouteTable").add(newRoute)
                 }
             } catch (e: Exception) {
-                Log.e("error", "API call failed", e)
-                return@withContext "Error: ${e.message}"
+                // Handle any errors here
+                Log.e("addNewRoutes", "Error writing document", e)
             }
         }
-
     }
-}
+    suspend fun readImage(image: String): String {
+        return withContext(Dispatchers.IO) {
+            val client = OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS) // Increase connect timeout
+                .readTimeout(30, TimeUnit.SECONDS) // Increase read timeout
+                .writeTimeout(30, TimeUnit.SECONDS) // Increase write timeout
+                .build()
+            val apiKey = "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"
+
+            val question = "Provide a list of all the routes names and the route grade"
+
+            val mediaType = "application/json; charset=utf-8".toMediaType()
+            val json = buildJsonObject {
+                put("model", "gpt-4-vision-preview")
+                putJsonArray("messages") {
+                    addJsonObject {
+                        put("role", "user")
+                        putJsonArray("content") {
+                            addJsonObject {
+                                put("type", "text")
+                                put("text", question)
+                            }
+                            addJsonObject {
+                                put("type", "image_url")
+                                put("image_url", "data:image/jpeg;base64,$image")
+                            }
+                        }
+                    }
+                }
+                put("max_tokens", 500)
+            }.toString()
+
+            val body = json.toRequestBody(mediaType)
+
+
+            val request = Request.Builder()
+                .url("https://api.openai.com/v1/chat/completions") // Replace with your actual API endpoint
+                .post(body)
+                .addHeader(
+                    "Authorization",
+                    "Bearer $apiKey"
+                ) // Replace YOUR_API_KEY with your actual API key
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                val responseBody = response.body?.string() ?: ""
+                val jsonObject= JSONObject(responseBody)
+                val jsonArray: JSONArray = jsonObject.getJSONArray("choices")
+                val textResult = jsonArray.getJSONObject(0).getJSONObject("message").getString("content")
+
+                return@withContext textResult
+
+                }
+            }
+
+        }
+    }
+
+

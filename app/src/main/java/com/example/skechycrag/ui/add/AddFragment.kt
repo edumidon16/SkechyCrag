@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
+import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,21 +18,23 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
-import androidx.core.view.isVisible
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
+import com.example.skechycrag.R
 import com.example.skechycrag.databinding.FragmentAddBinding
-import com.example.skechycrag.ui.routedetail.RouteDetailState
-import com.example.skechycrag.ui.routedetail.RouteDetailViewModel
+import com.example.skechycrag.ui.model.RouteInfo
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 
-
+@AndroidEntryPoint
 class AddFragment : Fragment() {
 
     private var _binding: FragmentAddBinding? = null
@@ -53,6 +56,13 @@ class AddFragment : Fragment() {
             )
         }
 
+    }
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentAddBinding.inflate(layoutInflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -78,7 +88,7 @@ class AddFragment : Fragment() {
                         AddState.Start -> startState()
                         is AddState.Success -> {
                             withContext(Dispatchers.Main) {
-
+                                navigateToShowResponse(routeInfo.routeList)
                             }
                         }
                     }
@@ -87,12 +97,18 @@ class AddFragment : Fragment() {
         }
     }
 
+    private fun navigateToShowResponse(routeInfo: MutableList<RouteInfo>) {
+        findNavController().navigate(
+            R.id.action_addFragment2_to_showResponseFragment,
+            bundleOf("routeInfo" to routeInfo)
+        )
+    }
     private fun startState() {
-        TODO("Not yet implemented")
+
     }
 
     private fun loadingState() {
-        TODO("Not yet implemented")
+
     }
 
     private fun errorState() {
@@ -114,7 +130,9 @@ class AddFragment : Fragment() {
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
             // Initialize ImageCapture
-            imageCapture = ImageCapture.Builder().build()
+            imageCapture = ImageCapture.Builder()
+                .setTargetResolution(Size(1920, 1080)) // Example resolution, adjust based on device capabilities
+                .build()
 
             // Add imageCapture to your camera provider
             try {
@@ -167,14 +185,6 @@ class AddFragment : Fragment() {
         val outputStream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
         return Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT)
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        _binding = FragmentAddBinding.inflate(layoutInflater, container, false)
-        return binding.root
     }
 
 }

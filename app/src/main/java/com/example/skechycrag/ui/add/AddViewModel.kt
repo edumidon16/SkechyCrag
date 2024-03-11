@@ -3,6 +3,7 @@ package com.example.skechycrag.ui.add
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.skechycrag.domain.ReadImageUseCase
+import com.example.skechycrag.ui.model.RouteInfo
 import com.example.skechycrag.ui.routedetail.RouteDetailState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +33,7 @@ class AddViewModel @Inject constructor(
                         grade = data.grade
                     )
                 }
-                _addState.update { AddState.Success(uiRouteInfo) }
+                _addState.update { AddState.Success(uiRouteInfo as MutableList<RouteInfo>) }
             }else{
                 _addState.update { AddState.Error("empty") }
             }

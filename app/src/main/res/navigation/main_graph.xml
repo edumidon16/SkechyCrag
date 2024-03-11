@@ -23,7 +23,11 @@
         android:id="@+id/addFragment2"
         android:name="com.example.skechycrag.ui.add.AddFragment"
         android:label="fragment_add"
-        tools:layout="@layout/fragment_add" />
+        tools:layout="@layout/fragment_add" >
+        <action
+            android:id="@+id/action_addFragment2_to_showResponseFragment"
+            app:destination="@id/showResponseFragment" />
+    </fragment>
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.example.skechycrag.ui.search.SearchFragment"
@@ -38,4 +42,9 @@
         android:name="com.example.skechycrag.ui.routedetail.RouteDetailFragment"
         android:label="fragment_route_detail"
         tools:layout="@layout/fragment_route_detail" />
+    <fragment
+        android:id="@+id/showResponseFragment"
+        android:name="com.example.skechycrag.ui.showresponse.ShowResponseFragment"
+        android:label="fragment_show_response"
+        tools:layout="@layout/fragment_show_response" />
 </navigation>
