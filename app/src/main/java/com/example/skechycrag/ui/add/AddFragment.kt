@@ -88,6 +88,7 @@ class AddFragment : Fragment() {
                         AddState.Start -> startState()
                         is AddState.Success -> {
                             withContext(Dispatchers.Main) {
+                                hideLoadingUI()
                                 navigateToShowResponse(routeInfo.routeList)
                             }
                         }
@@ -108,7 +109,7 @@ class AddFragment : Fragment() {
     }
 
     private fun loadingState() {
-
+        showLoadingUI()
     }
 
     private fun errorState() {
@@ -171,7 +172,6 @@ class AddFragment : Fragment() {
                     val base64ImageString = convertBitmapToBase64(bitmap)
 
                     addViewModel.readInfo(base64ImageString)
-                    // Here, call your API with `base64ImageString`
                 }
 
                 override fun onError(exc: ImageCaptureException) {
@@ -187,4 +187,14 @@ class AddFragment : Fragment() {
         return Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT)
     }
 
+    private fun showLoadingUI() {
+        binding.overlay.visibility = View.VISIBLE
+        binding.progressBar.visibility = View.VISIBLE
+        binding.captureButton.visibility = View.GONE
+    }
+
+    private fun hideLoadingUI() {
+        binding.overlay.visibility = View.GONE
+        binding.progressBar.visibility = View.GONE
+    }
 }

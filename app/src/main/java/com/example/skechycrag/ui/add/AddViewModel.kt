@@ -23,6 +23,7 @@ class AddViewModel @Inject constructor(
     fun readInfo(image: String) {
         _addState.update { AddState.Start }
         viewModelScope.launch {
+            _addState.update { AddState.Loading }
             val routeInfo = readImageUseCase(image)
 
             if(!routeInfo.isNullOrEmpty()){

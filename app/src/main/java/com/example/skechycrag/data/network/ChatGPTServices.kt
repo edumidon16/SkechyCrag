@@ -58,7 +58,7 @@ class ChatGPTServices @Inject constructor(
                 .build()
             val apiKey = "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"
 
-            val question = "Provide a list of all the routes names and the route grade"
+            val question = "Provide a list of the route names follow by the route grade. The response should look like this: routeName - routeGrade"
 
             val mediaType = "application/json; charset=utf-8".toMediaType()
             val json = buildJsonObject {

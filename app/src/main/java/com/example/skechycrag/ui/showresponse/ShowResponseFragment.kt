@@ -51,7 +51,7 @@ class ShowResponseFragment : Fragment() {
                 binding.recyclerViewRoutes.layoutManager = LinearLayoutManager(requireContext())
                 binding.recyclerViewRoutes.adapter = responseAdapter
         }
-        binding.saveButtom.setOnClickListener {
+        binding.saveButton.setOnClickListener {
             val cragName = binding.editTextCragName.text
             showResponseViewModel.addNewRoutes(cragName.toString(), newRoutesList)
         }
