@@ -1,5 +1,6 @@
 package com.example.skechycrag.data.repository
 
+import com.example.skechycrag.data.model.crag.CragProvide
 import com.example.skechycrag.data.model.route.RouteModel
 import com.example.skechycrag.data.model.route.RouteProvider
 import com.example.skechycrag.data.model.user.MoreInfoRouteModel
@@ -12,7 +13,8 @@ import javax.inject.Inject
 class RouteRepository @Inject constructor(
     private val routeServices: RouteServices,
     private val routeProvider: RouteProvider,
-    private val userProvider: UserProvider
+    private val userProvider: UserProvider,
+    private val cragProvide: CragProvide
 ) {
 
     suspend fun getAllRoutesFromCrag(name: String): List<RouteModel> {
@@ -65,6 +67,29 @@ class RouteRepository @Inject constructor(
             }
         }
         routeServices.addAlert(userId, alertMessage, routeId)
+    }
+
+    suspend fun addNewRoute(cragName:String, routeName:String, routeGrade:String, type:String){
+        var routeId = ""
+        var cragId = ""
+        var numRoutes = 0
+        for(crag in cragProvide.cragInfo){
+            if(cragName == crag.crag_name){
+                crag.number_routes++
+                numRoutes = crag.number_routes
+                cragId = crag.crag_id
+            }
+        }
+        routeId = routeServices.addNewRoute(cragName,routeName,routeGrade,type, cragId, numRoutes).toString()
+
+        var newRoute = RouteModel(
+            route_id = routeId,
+            crag_name = cragName,
+            route_name = routeName,
+            grade = routeGrade,
+            type = type
+        )
+        routeProvider.routeList.add(newRoute)
     }
 
 }

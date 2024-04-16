@@ -1,6 +1,5 @@
 package com.example.skechycrag.di
 
-import com.example.skechycrag.ui.routedetail.RouteDetailViewModel
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides

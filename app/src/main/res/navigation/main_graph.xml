@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_graph"
-    app:startDestination="@id/addFragment2">
+    app:startDestination="@id/logInFragment">
 
     <fragment
         android:id="@+id/logBookFragment"
@@ -47,4 +47,23 @@
         android:name="com.example.skechycrag.ui.showresponse.ShowResponseFragment"
         android:label="fragment_show_response"
         tools:layout="@layout/fragment_show_response" />
+    <fragment
+        android:id="@+id/menuAddFragment"
+        android:name="com.example.skechycrag.ui.menuadd.MenuAddFragment"
+        android:label="MenuAddFragment" >
+        <action
+            android:id="@+id/action_menuAddFragment_to_addFragment2"
+            app:destination="@id/addFragment2" />
+        <action
+            android:id="@+id/action_menuAddFragment_to_addRouteFragment"
+            app:destination="@id/addRouteFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addRouteFragment"
+        android:name="com.example.skechycrag.ui.addroute.AddRouteFragment"
+        android:label="AddRouteFragment" >
+        <action
+            android:id="@+id/action_addRouteFragment_to_menuAddFragment"
+            app:destination="@id/menuAddFragment" />
+    </fragment>
 </navigation>

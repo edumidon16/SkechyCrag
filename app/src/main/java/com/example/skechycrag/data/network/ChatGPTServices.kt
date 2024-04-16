@@ -1,6 +1,7 @@
 package com.example.skechycrag.data.network
 
 import android.util.Log
+import com.example.skechycrag.BuildConfig
 import com.example.skechycrag.data.model.route.RouteInfo
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
@@ -56,7 +57,8 @@ class ChatGPTServices @Inject constructor(
                 .readTimeout(30, TimeUnit.SECONDS) // Increase read timeout
                 .writeTimeout(30, TimeUnit.SECONDS) // Increase write timeout
                 .build()
-            val apiKey = "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"
+
+            val apiKey = BuildConfig.APIKEY
 
             val question = "Provide a list of the route names follow by the route grade. The response should look like this: routeName - routeGrade"
 
@@ -85,14 +87,13 @@ class ChatGPTServices @Inject constructor(
 
 
             val request = Request.Builder()
-                .url("https://api.openai.com/v1/chat/completions") // Replace with your actual API endpoint
+                .url("https://api.openai.com/v1/chat/completions")
                 .post(body)
                 .addHeader(
                     "Authorization",
                     "Bearer $apiKey"
-                ) // Replace YOUR_API_KEY with your actual API key
+                )
                 .build()
-
             client.newCall(request).execute().use { response ->
                 val responseBody = response.body?.string() ?: ""
                 val jsonObject= JSONObject(responseBody)

@@ -15,7 +15,8 @@ class GetRouteDetailUseCase @Inject constructor(
     suspend operator fun invoke(name: String): List<RouteModel> {
         return routeRepository.getAllRoutesFromCrag(name)
     }
-    suspend fun addRoute(route: UserRouteModel){
+
+    suspend fun addRoute(route: UserRouteModel) {
         val commentRoute = MoreInfoRouteModel(
             username = USERNAME,
             comment = route.comment,
@@ -24,31 +25,41 @@ class GetRouteDetailUseCase @Inject constructor(
         )
         var user = userRepository.getUserLevel()
         user.let {
-            var difficultSum = user?.difficultySum
-            var numRoutes = user?.numRoutes?.plus(1)
-            var gradeInDouble = convertGradeToNumber(route.grade)
-            difficultSum = difficultSum?.plus( gradeInDouble.toInt())
+            // Update difficulty sum and number of routes
+            var difficultySum = user?.difficultySum ?: 0
+            var numRoutes = user?.numRoutes ?: 0
+            val gradeInDouble = convertGradeToNumber(route.grade)
+            difficultySum += gradeInDouble.toInt()
+            numRoutes += 1
 
-            //We multiplicate the difficulty sum to the number of routes that has done - 1
-            //If a user has 27.0 of difficultySum with 3 routes, is equal to 26.19 of level
-            //If he does a 5 = 1 point, his difficultySum will be 28.0 with 4 routes, the level = 26.88
-            //Meaning that even if a good climber does a easy climb his level steal improves
-            var a = 1.0
-            var b = numRoutes?.div(100)?.toDouble()
-            var level = difficultSum?.times(a - b!!)
+            /*
+            DifficultySum: The total sum of the difficulties of all routes the user has climbed. Difficulty for each route is converted into a numerical value that can be summed.
+            NumRoutes: The total number of routes the user has climbed.
+            A, B, and C are constants that need to be adjusted based on the desired scaling of the level. They allow for tuning the impact of difficulty sum and number of routes on the overall level.
+            The +1 inside the logarithm ensures that the argument is always positive, which is required as the logarithm of non-positive numbers is undefined.
+            The logarithmic function (log) is used to moderate the rate of level increase, ensuring that while both difficulty sum and the number of routes positively contribute to the level, the rate of increase slows down as the values grow, which simulates realistic progression.
+             */
+            // Constants for the level calculation formula
+            val a = 10.0
+            val b = 1.0
+            val c = 1.0
 
-            if(level?.toDouble() != 0.0){
-                user?.level = level!!.toDouble()
-                user?.numRoutes = numRoutes!!
-                user?.difficultySum = difficultSum!!.toInt()
-            }
+            // Calculate the new level using the proposed formula
+            val level = a * kotlin.math.ln(b * difficultySum + c * numRoutes + 1)
+            // Update the user's stats
+            user?.level = level
+            user?.numRoutes = numRoutes
+            user?.difficultySum = difficultySum
+
+            // Persist changes
             routeRepository.addRouteToLogBook(route, commentRoute)
             userRepository.changeUserLevel(user)
         }
     }
+
     private fun convertGradeToNumber(grade: String): Double {
         // Convert the grade to a number
-        return when(grade) {
+        return when (grade) {
             "5" -> 1.0
             "5+" -> 2.0
             "6a" -> 3.0

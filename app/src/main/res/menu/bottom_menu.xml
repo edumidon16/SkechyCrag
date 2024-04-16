@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/addFragment2"
+        android:id="@+id/menuAddFragment"
         android:title="@string/add"
         android:icon="@drawable/ic_add"/>
     <item

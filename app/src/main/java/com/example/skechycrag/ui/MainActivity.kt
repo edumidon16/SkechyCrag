@@ -58,9 +58,9 @@ class MainActivity : AppCompatActivity() {
                     navController.navigate(R.id.logBookFragment)
                     true
                 }
-                R.id.addFragment2 -> {
+                R.id.menuAddFragment -> {
                     // Navigate to the add fragment
-                    navController.navigate(R.id.addFragment2)
+                    navController.navigate(R.id.menuAddFragment)
                     true
                 }
                 else -> false

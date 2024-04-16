@@ -1,7 +1,8 @@
 package com.example.skechycrag.ui.login
 
 import com.example.skechycrag.domain.GetUsersUseCase
-import io.kotlintest.specs.AbstractAnnotationSpec
+import com.example.skechycrag.ui.login.UserDetailState
+import com.example.skechycrag.ui.login.UserViewModel
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
@@ -47,7 +48,7 @@ class UserViewModelTest {
     }
 
     @Test
-    fun `check user success`() = runTest {
+    fun `check login user`() = runTest {
         // Arrange
         val username = "Edu"
         val password = "3"
@@ -62,7 +63,7 @@ class UserViewModelTest {
     }
 
     @Test
-    fun `check user failure`() = runTest {
+    fun `check wrong user`() = runTest {
         // Arrange
         val username = "wrongUser"
         val password = "wrongPass"

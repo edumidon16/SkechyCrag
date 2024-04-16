@@ -33,7 +33,12 @@ class RouteServices @Inject constructor(
 
     }
 
-    suspend fun addRouteToLogBook(user_id: String, routeId: String, route: UserRouteModel, commentRoute:MoreInfoRouteModel ) {
+    suspend fun addRouteToLogBook(
+        user_id: String,
+        routeId: String,
+        route: UserRouteModel,
+        commentRoute: MoreInfoRouteModel
+    ) {
         withContext(Dispatchers.IO) {
             try {
                 val commentR = hashMapOf<String, Any>(
@@ -62,8 +67,8 @@ class RouteServices @Inject constructor(
     }
 
     suspend fun addAlert(userId: String?, alertMessage: String, routeId: String) {
-        withContext(Dispatchers.IO){
-            try{
+        withContext(Dispatchers.IO) {
+            try {
                 if (userId != null) {
                     val routeDocumentRef = db.collection("UserRoutesTable").document(userId)
                         .collection("Comments").document(routeId)
@@ -86,6 +91,61 @@ class RouteServices @Inject constructor(
                 e.printStackTrace()
             }
         }
+    }
+
+    suspend fun addNewRoute(
+        cragName: String,
+        routeName: String,
+        routeGrade: String,
+        type: String,
+        cragId: String,
+        numRoutes: Int
+    ) {
+        var id = ""
+        withContext(Dispatchers.IO) {
+            try {
+                // Check if cragId is null or empty, or if numRoutes is 0
+                if (cragId.isNullOrEmpty() || numRoutes == 0) {
+                    val querySnapshot = db.collection("CragTable")
+                        .whereEqualTo("crag_name", cragName)
+                        .get()
+                        .await()
+
+                    val document = if (querySnapshot.documents.isEmpty()) {
+                        // Crag doesn't exist, create a new crag
+                        val newCragData = hashMapOf(
+                            "crag_name" to cragName,
+                            "number_routes" to 1 // Starting with 1 route
+                        )
+                        db.collection("CragTable").add(newCragData).await()
+                    } else {
+                        // Crag exists, update number of routes
+                        val existingCragDoc = querySnapshot.documents.first()
+                        val updatedRoutesCount =
+                            existingCragDoc.getLong("number_routes")?.plus(1) ?: 1
+                        db.collection("CragTable").document(existingCragDoc.id)
+                            .update("number_routes", updatedRoutesCount).await()
+                        existingCragDoc
+                    }
+                }
+
+                val newRoute = hashMapOf(
+                    "crag_name" to cragName,
+                    "route_name" to routeName,
+                    "grade" to routeGrade,
+                    "type" to type
+                )
+                // Add the new route and await the result
+                val documentReference = db.collection("RouteTable").add(newRoute).await()
+
+                // Return the new document ID
+                documentReference.id
+            } catch (e: Exception) {
+                // Handle any errors here
+                Log.e("addNewRoutes", "Error writing document", e)
+            }
+        }
+
     }
 
 }

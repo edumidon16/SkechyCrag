@@ -8,7 +8,6 @@ import com.example.skechycrag.ui.model.RouteModel
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
@@ -89,7 +88,6 @@ class RouteDetailViewModelTest {
 
         advanceUntilIdle() // Wait until all coroutines are idle before proceeding with the assertions
 
-        //assertTrue(results[0] is RouteDetailState.Loading, "First state should be Loading")
         assertTrue(results[0] is RouteDetailState.Error, "Second state should be Error")
 
         job.cancel()
